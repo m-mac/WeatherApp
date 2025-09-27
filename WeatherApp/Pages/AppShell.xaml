@@ -4,14 +4,15 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:WeatherApp.Pages"
+    xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     Title="WeatherApp">
     
     <TabBar>
-        <Tab>
-            <ShellContent Title="Main" ContentTemplate="{DataTemplate pages:MainPage}" />
+        <Tab Title="Home" Icon="{mi:FontAwesomeSolid Icon=House}">
+            <ShellContent ContentTemplate="{DataTemplate pages:MainPage}" />
         </Tab>
-        <Tab>
-            <ShellContent Title="Settings" ContentTemplate="{DataTemplate pages:SettingsPage}" />
+        <Tab Title="Settings" Icon="{mi:FontAwesomeSolid Icon=AddressBook}">
+            <ShellContent ContentTemplate="{DataTemplate pages:SettingsPage}" />
         </Tab>
     </TabBar>
 </Shell>
