@@ -35,6 +35,7 @@ public static class MauiProgram
 	public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
 	{
 		builder.Services.AddSingleton<MainViewModel>();
+		builder.Services.AddSingleton<SettingsViewModel>();
 		
 		return builder;
 	}
@@ -42,6 +43,7 @@ public static class MauiProgram
 	public static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
 	{
 		builder.Services.AddSingleton<MainPage>();
+		builder.Services.AddSingleton<SettingsPage>();
 		
 		return builder;
 	}
