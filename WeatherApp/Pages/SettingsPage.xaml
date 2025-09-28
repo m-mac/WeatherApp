@@ -12,6 +12,12 @@
         <Grid Padding="0" RowDefinitions="*, 1, Auto">
             <ScrollView Grid.Row="0">
                 <TableView Intent="Settings">
+                    <TableSection Title="Application">
+                        <EntryCell Label="API Key"
+                                   Placeholder="Enter API Key"
+                                   Text="{Binding ApiKeyText}" Completed="ApiKeyEntryCell_OnCompleted" />
+                    </TableSection>
+
                     <TableSection Title="Danger Zone">
                         <TextCell TextColor="Red"
                                   Text="Reset App" Detail="Deletes stored data, locations and weather records" />
