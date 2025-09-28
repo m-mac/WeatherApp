@@ -104,10 +104,10 @@ public partial class HomeViewModel : ObservableObject
 
 
         if (pinned.Any())
-            LocationGroups.Add(new LocationGroup("Pinned", pinned));
+            LocationGroups.Add(new LocationGroup("Pinned Locations", pinned));
 
         if (notPinned.Any())
-            LocationGroups.Add(new LocationGroup("NotPinned", notPinned));
+            LocationGroups.Add(new LocationGroup("Locations", notPinned));
     }
 
     private async Task<WeatherRecord> GetCurrentWeatherForLocationAsync(LocationRecord location)
