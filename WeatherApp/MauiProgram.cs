@@ -35,10 +35,13 @@ public static class MauiProgram
 
 
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
-    {
+    {        
+        builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
         builder.Services.AddTransient<ISettingsService, SettingsService>();
         builder.Services.AddTransient<IModalService, ModalService>();
-        builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
+        
+        // The DI container will magically resolve this for any T.
+        builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
         return builder;
     }
@@ -48,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<HomeViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<ApiKeyViewModel>();
+        builder.Services.AddSingleton<AppShellViewModel>();
 
         return builder;
     }
