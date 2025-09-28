@@ -1,27 +1,72 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using WeatherApp.Interfaces;
 
 namespace WeatherApp.ViewModels;
 
-public class SettingsViewModel : ObservableObject
+public partial class SettingsViewModel : ObservableObject
 {
+    private ILogger logger;
     private ISettingsService settingsService;
+    private IModalService modalService;
 
-    public IAsyncRelayCommand<string> OpenUrlCommand { get; }
+    private readonly ApiKeyViewModel apiKeyViewModel;
 
-    public SettingsViewModel(ISettingsService settingsService)
+    [ObservableProperty] private string? apiKeyText;
+
+    public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService,
+        ApiKeyViewModel apiKeyViewModel, IModalService modalService)
     {
+        this.logger = logger;
         this.settingsService = settingsService;
-        this.OpenUrlCommand = new AsyncRelayCommand<string>(ExecuteOpenUrlCommand);
+        this.modalService = modalService;
+        this.apiKeyViewModel = apiKeyViewModel;
     }
 
-    private static async Task ExecuteOpenUrlCommand(string? url)
+    public bool HasApiKey => apiKeyViewModel.HasApiKey;
+
+    [RelayCommand]
+    private async Task OpenUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url)) return;
 
         // Should open the default web view 
         await Launcher.OpenAsync(url);
+    }
+
+    [RelayCommand]
+    private async Task SetApiKey(string? apiKey)
+    {
+        var confirm = await modalService.ShowConfirmationAsync(
+            "Set API Key?",
+            "This will overwrite an existing API key.",
+            "SET",
+            "Cancel"
+        );
+
+        if (!confirm) return;
+
+        await apiKeyViewModel.SaveApiKeyAsync(apiKey);
+        logger.LogInformation("API key Set");
+    }
+
+
+    [RelayCommand]
+    private async Task ResetApp()
+    {
+        var confirm = await modalService.ShowConfirmationAsync(
+            "Reset Application Data",
+            "Are you sure you want to delete the application data?",
+            "DELETE",
+            "Cancel");
+
+        if (!confirm) return;
+        logger.LogInformation("Deleting application data");
+        // Drop and recreate SQLite DB
+        // Remove the API Key
+        // Default anything in stored Preferences
+        // Trigger recreate
     }
 }
