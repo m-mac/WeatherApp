@@ -1,33 +1,96 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Logging;
+using WeatherApp.Extensions;
+using WeatherApp.Interfaces;
 using WeatherApp.Models;
+using WeatherApp.Pages;
 
 namespace WeatherApp.ViewModels;
 
-public class HomeViewModel : ObservableObject
+public partial class HomeViewModel : ObservableObject
 {
     // When this changes (an item is added, removed or updated) LocationGroups needs to be reloaded.
     public ObservableCollection<LocationRecord> Locations { get; } = new();
     public ObservableCollection<LocationGroup> LocationGroups { get; } = new();
 
-    /*
-     * Going to need to filter Locations into a LocationGroups based on "Pinned" property
-     *  
-     */
-    
-    
-    public HomeViewModel()
+
+    private IRepository<WeatherRecord> weatherRecordRepository;
+    private IRepository<LocationRecord> locationRepository;
+    private IModalService modalService;
+    private ILogger<HomeViewModel> logger;
+    private IWeatherApiService weatherApiService;
+
+    public HomeViewModel(IRepository<WeatherRecord> weatherRecordRepository,
+                         IRepository<LocationRecord> locationRepository,
+                         IModalService modalService,
+                         ILogger<HomeViewModel> logger,
+                         IWeatherApiService weatherApiService)
     {
-        AddDummyLocations();
+        this.weatherRecordRepository = weatherRecordRepository;
+        this.locationRepository = locationRepository;
+        this.modalService = modalService;
+        this.logger = logger;
+        this.weatherApiService = weatherApiService;
+
+        WeakReferenceMessenger.Default.Register<LocationAddedMessage>(this,
+            async (r, m) => { await LoadLocationsAsync(); });
+
+        WeakReferenceMessenger.Default.Register<DataResetMessage>(this, (r, m) =>
+        {
+            Locations.Clear();
+            LocationGroups.Clear();
+        });
+
+        // Initial load
+        _ = LoadLocationsAsync();
     }
 
 
-    private void LoadLocations()
+    [RelayCommand]
+    private async Task AddLocation()
     {
-        // Wire to SQLite backend
-        throw new NotImplementedException();
+        var page = App.Services.GetRequiredService<AddLocationPage>();
+        await modalService.PushModalAsync(page);
     }
 
+    private async Task LoadLocationsAsync()
+    {
+        try
+        {
+            var locations = await locationRepository.GetAllAsync();
+            if (!locations.Any())
+            {
+                logger.LogInformation("No locations found");
+                return;
+            }
+
+            Locations.Clear();
+            LocationGroups.Clear();
+
+            foreach (var location in locations)
+            {
+                location.CurrentWeatherRecord = await GetCurrentWeatherForLocationAsync(location);
+
+                // Check to see if we've got a weather record and that it's current
+                if (location.CurrentWeatherRecord == null ||
+                    location.CurrentWeatherRecord.RecordTime.Date != DateTime.UtcNow.Date)
+                {
+                    await GetCurrentWeatherForLocationAsync(location);
+                }
+
+                Locations.Add(location);
+            }
+
+            LoadLocationGroups();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to load locations");
+        }
+    }
 
     private void LoadLocationGroups()
     {
@@ -38,78 +101,53 @@ public class HomeViewModel : ObservableObject
 
         // Initial clear so we can reuse this method on sync
         LocationGroups.Clear();
-        
-        
+
+
         if (pinned.Any())
             LocationGroups.Add(new LocationGroup("Pinned", pinned));
-        
+
         if (notPinned.Any())
             LocationGroups.Add(new LocationGroup("NotPinned", notPinned));
-        
-        
-        // If LocationGroups is empty we want to put a little view with some instructions or something in it's place
-
     }
-    
-    
 
-    private void AddDummyLocations()
+    private async Task<WeatherRecord> GetCurrentWeatherForLocationAsync(LocationRecord location)
     {
-        Locations.Add(new LocationRecord
-        {
-            Id = 1,
-            Name = "Central Park",
-            Address = "New York, NY, USA",
-            Latitude = 40.785091,
-            Longitude = -73.968285,
-            SavedAt = DateTime.Now.AddDays(-2),
-            Pinned = true
-        });
+        if (location == null) throw new ArgumentNullException(nameof(location));
 
-        Locations.Add(new LocationRecord
-        {
-            Id = 2,
-            Name = "Eiffel Tower",
-            Address = "Paris, France",
-            Latitude = 48.8584,
-            Longitude = 2.2945,
-            SavedAt = DateTime.Now.AddDays(-1),
-            Pinned = false
-        });
+        var currentDate = DateTime.UtcNow.Date;
 
-        Locations.Add(new LocationRecord
-        {
-            Id = 3,
-            Name = "Sydney Opera House",
-            Address = "Sydney NSW, Australia",
-            Latitude = -33.8568,
-            Longitude = 151.2153,
-            SavedAt = DateTime.Now.AddHours(-5),
-            Pinned = false
-        });
+        // Query the most recent WeatherRecord for this location
+        var recentRecord = await weatherRecordRepository.FirstOrDefaultAsync<WeatherRecord>(q =>
+            q.Where(w => w.LocationId == location.Id)
+                .OrderByDescending(w => w.RecordTime)
+        );
 
-        Locations.Add(new LocationRecord
+        if (recentRecord != null && recentRecord.RecordTime.Date == currentDate)
         {
-            Id = 4,
-            Name = "Tokyo Tower",
-            Address = "Tokyo, Japan",
-            Latitude = 35.6586,
-            Longitude = 139.7454,
-            SavedAt = DateTime.Now.AddHours(-10),
-            Pinned = true
-        });
+            location.CurrentWeatherRecord = recentRecord;
+            return recentRecord;
+        }
 
-        Locations.Add(new LocationRecord
+        // Fetch from API if missing or outdated
+        var weatherResponse = await weatherApiService.GetWeatherResponseAsync(
+            location.Latitude,
+            location.Longitude,
+            currentDate
+        );
+
+        if (weatherResponse == null)
         {
-            Id = 5,
-            Name = "Christ the Redeemer",
-            Address = "Rio de Janeiro, Brazil",
-            Latitude = -22.9519,
-            Longitude = -43.2105,
-            SavedAt = DateTime.Now,
-            Pinned = false
-        });
+            location.CurrentWeatherRecord = null;
+            return null;
+        }
 
+        var newRecord = weatherResponse.ToWeatherRecord(location.Id);
+
+        // Save to database
+        int newId = await weatherRecordRepository.InsertAsync(newRecord);
+        newRecord.Id = newId; // assign returned ID
+        location.CurrentWeatherRecord = newRecord;
+
+        return newRecord;
     }
 }
-
