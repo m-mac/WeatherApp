@@ -42,7 +42,10 @@ public static class MauiProgram
         builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
         builder.Services.AddTransient<IPreferencesService, PreferencesService>();
         builder.Services.AddTransient<IModalService, ModalService>();
+        builder.Services.AddTransient<IGeocodingService, GeocodingService>();
         
+        builder.Services.AddSingleton<HttpClient>();
+        builder.Services.AddTransient<IWeatherApiService, WeatherApiService>();
         // The DI container will magically resolve this for any T.
         builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
         
