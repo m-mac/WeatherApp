@@ -30,9 +30,12 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-        return builder.Build();
-    }
+        var app = builder.Build();
 
+        App.Services = app.Services;
+        
+        return app;
+    }
 
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {        
