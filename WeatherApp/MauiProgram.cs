@@ -45,6 +45,20 @@ public static class MauiProgram
         
         // The DI container will magically resolve this for any T.
         builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+        
+        builder.Services.AddSingleton<ISecureStorage>(sp =>
+        {
+#if IOS
+            if (DeviceInfo.DeviceType == DeviceType.Virtual)
+            {
+                // Simulator fallback. A provisioning profile is required f you create an Entitlements.plist to access
+                // SecuredStorage. This swaps out the SecuredStorage for app preferences instead
+                return new PreferencesStorage();
+            }
+#endif
+
+            return SecureStorage.Default;
+        });
 
         return builder;
     }
