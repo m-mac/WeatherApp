@@ -20,7 +20,8 @@
 
                     <TableSection Title="Danger Zone">
                         <TextCell TextColor="Red"
-                                  Text="Reset App" Detail="Deletes stored data, locations and weather records" />
+                                  Text="Reset App" Detail="Deletes stored data, locations and weather records"
+                                  Command="{Binding ResetAppCommand}" />
                     </TableSection>
 
                     <TableSection Title="Open Source Licenses">
@@ -43,7 +44,7 @@
                     </TableSection>
                 </TableView>
             </ScrollView>
-            
+
             <!-- Horizontal divider -->
             <BoxView Grid.Row="1" HorizontalOptions="Fill" HeightRequest="1" BackgroundColor="LightGrey"></BoxView>
 
