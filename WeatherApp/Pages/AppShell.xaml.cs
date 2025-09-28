@@ -1,4 +1,6 @@
-﻿namespace WeatherApp;
+﻿using WeatherApp.ViewModels;
+
+namespace WeatherApp;
 
 public partial class AppShell : Shell
 {
