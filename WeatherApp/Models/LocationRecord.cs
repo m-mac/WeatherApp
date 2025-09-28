@@ -1,4 +1,5 @@
 using SQLite;
+using WeatherApp.Interfaces;
 
 namespace WeatherApp.Models;
 
