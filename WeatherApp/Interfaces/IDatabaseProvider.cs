@@ -7,6 +7,7 @@ namespace WeatherApp.Interfaces;
 public interface IDatabaseProvider
 {
     SQLiteAsyncConnection GetConnection();
-    Task InitAsync();
+    Task InitAsync(SQLiteAsyncConnection? connection = null);
     Task<bool> HealthCheckAsync();
+    Task DropAllAsync();
 }

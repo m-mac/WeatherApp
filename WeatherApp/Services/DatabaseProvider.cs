@@ -18,14 +18,12 @@ public class DatabaseProvider : IDatabaseProvider
 
     public SQLiteAsyncConnection GetConnection() => new SQLiteAsyncConnection(Constants.DatabasePath);
 
-    public async Task InitAsync()
+    public async Task InitAsync(SQLiteAsyncConnection? connection = null)
     {
-        var db = GetConnection();
+        connection ??= GetConnection();
 
-        await db.CreateTableAsync<WeatherRecord>();
-        await db.CreateTableAsync<LocationRecord>();
-
-        logger.LogInformation("Created DB tables");
+        await connection.CreateTableAsync<WeatherRecord>();
+        await connection.CreateTableAsync<LocationRecord>();
     }
     
     /// <summary>
@@ -37,13 +35,37 @@ public class DatabaseProvider : IDatabaseProvider
         try
         {
             var connection = GetConnection();
-            var result = await connection.ExecuteScalarAsync<int>(HealthCheckQuery);
-            return result >= 0;
+            var tableCount = await connection.ExecuteScalarAsync<int>(HealthCheckQuery);
+            if (tableCount == 0)
+                return false;
+            
+            return true;
+
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Database health check failed");
             return false;
+        }
+    }
+
+    public async Task DropAllAsync()
+    {
+        try
+        {
+            var connection = GetConnection(); // Should return SQLiteAsyncConnection
+
+            // Drop tables
+            await connection.DropTableAsync<LocationRecord>();
+            await connection.DropTableAsync<WeatherRecord>();
+            
+            // Recreate
+            await InitAsync(connection);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to drop tables");
+            throw;
         }
     }
 }
