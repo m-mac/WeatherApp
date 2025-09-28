@@ -12,13 +12,8 @@
         <ToolbarItem Text="Add Location" Command="{Binding AddLocationCommand}" />
     </pages:MvvmContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="Auto, 2*">
-        <Grid Grid.Row="0"
-              HeightRequest="200"
-              BackgroundColor="CornflowerBlue">
-
-        </Grid>
-        <CollectionView Grid.Row="1"
+    <Grid RowDefinitions="*">
+        <CollectionView Grid.Row="0"
                         ItemsSource="{Binding LocationGroups}"
                         IsGrouped="True"
                         SelectionMode="None">
