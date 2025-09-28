@@ -2,6 +2,7 @@ namespace WeatherApp;
 
 public static class Constants
 {
+    public const string ApiKeyStorageKey = "OpenWeatherApiKey";
     public const string DatabaseFilename = "WeatherApp.db3";
     
     // Creates DB if it doesn't exist and enables multithreaded access
