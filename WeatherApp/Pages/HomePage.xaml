@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<pages:MvvmContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+                       xmlns:pages="clr-namespace:WeatherApp.Pages"
+                       xmlns:models="clr-namespace:WeatherApp.Models"
+                       x:Class="WeatherApp.Pages.HomePage"
+                       x:TypeArguments="vm:HomeViewModel"
+                       Title="Home">
+    
+    <pages:MvvmContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddCommand}" />
+    </pages:MvvmContentPage.ToolbarItems>
+    
+    
+    
+    <pages:MvvmContentPage.Resources>
+        <!-- Define an array of strings as dummy items -->
+        <x:Array x:Key="DummyItems" Type="{x:Type x:String}">
+            <x:String>First Item</x:String>
+            <x:String>Second Item</x:String>
+            <x:String>Third Item</x:String>
+        </x:Array>
+    </pages:MvvmContentPage.Resources>
+
+    <Grid RowDefinitions="1*, 2*">
+        
+        <VerticalStackLayout Grid.Row="0">
+            <!-- This probably shouldnt be a carousel view because it should display the selected location data from the list view
+instead, use list/collection view groupings and put the pinned ones at the top-->
+            <CarouselView IndicatorView="carouselIndicator"
+                          HeightRequest="200"
+                          ItemsSource="{StaticResource DummyItems}">
+                <CarouselView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" SnapPointsType="MandatorySingle" SnapPointsAlignment="Start"/>
+                </CarouselView.ItemsLayout>
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0, 10"
+                               Padding="20"
+                               CornerRadius="0"
+                               BackgroundColor="CornflowerBlue" >
+                            <Label Text="{Binding .}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   FontSize="24" />
+                        </Frame>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+            <IndicatorView x:Name="carouselIndicator"
+                           IndicatorsShape="Circle"
+                           IndicatorColor="Gray"
+                           SelectedIndicatorColor="Black"
+                           HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+        
+        
+        <CollectionView Grid.Row="1"
+            ItemsSource="{Binding Locations}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:LocationRecord">
+                    <Frame>
+                        <Label Text="{Binding Name}"></Label>
+                    </Frame>
+                    
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            
+        </CollectionView>
+    </Grid>
+
+</pages:MvvmContentPage>

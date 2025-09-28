@@ -7,9 +7,10 @@
     xmlns:mi="http://www.aathifmahir.com/dotnet/2022/maui/icons"
     Title="WeatherApp">
     
+    
     <TabBar>
         <Tab Title="Home" Icon="{mi:FontAwesomeSolid Icon=House}">
-            <ShellContent ContentTemplate="{DataTemplate pages:MainPage}" />
+            <ShellContent ContentTemplate="{DataTemplate pages:HomePage}" />
         </Tab>
         <Tab Title="Settings" Icon="{mi:FontAwesomeSolid Icon=AddressBook}">
             <ShellContent ContentTemplate="{DataTemplate pages:SettingsPage}" />

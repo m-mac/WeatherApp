@@ -2,9 +2,9 @@
 
 namespace WeatherApp.Pages;
 
-public partial class MainPage
+public partial class HomePage
 {
-	public MainPage(MainViewModel viewModel) : base(viewModel)
+	public HomePage(HomeViewModel viewModel) : base(viewModel)
 	{
 		InitializeComponent();
 	}
