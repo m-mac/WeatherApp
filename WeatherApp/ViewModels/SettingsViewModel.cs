@@ -9,18 +9,18 @@ namespace WeatherApp.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private ILogger logger;
-    private ISettingsService settingsService;
+    private IPreferencesService preferencesService;
     private IModalService modalService;
 
     private readonly ApiKeyViewModel apiKeyViewModel;
 
     [ObservableProperty] private string? apiKeyText;
 
-    public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService,
+    public SettingsViewModel(ILogger<SettingsViewModel> logger, IPreferencesService preferencesService,
         ApiKeyViewModel apiKeyViewModel, IModalService modalService)
     {
         this.logger = logger;
-        this.settingsService = settingsService;
+        this.preferencesService = preferencesService;
         this.modalService = modalService;
         this.apiKeyViewModel = apiKeyViewModel;
     }

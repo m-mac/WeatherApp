@@ -40,7 +40,7 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {        
         builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
-        builder.Services.AddTransient<ISettingsService, SettingsService>();
+        builder.Services.AddTransient<IPreferencesService, PreferencesService>();
         builder.Services.AddTransient<IModalService, ModalService>();
         
         // The DI container will magically resolve this for any T.

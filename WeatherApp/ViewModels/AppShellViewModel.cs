@@ -6,14 +6,14 @@ namespace WeatherApp.ViewModels;
 
 public class AppShellViewModel : ObservableObject
 {
-	private ISettingsService settingsService;
+	private IPreferencesService preferencesService;
 	private ILogger<AppShellViewModel> logger;
 	private IDatabaseProvider databaseProvider;
 	
-	public AppShellViewModel(ISettingsService settingsService, ILogger<AppShellViewModel> logger,
+	public AppShellViewModel(IPreferencesService preferencesService, ILogger<AppShellViewModel> logger,
 		IDatabaseProvider databaseProvider)
 	{
-		this.settingsService = settingsService;
+		this.preferencesService = preferencesService;
 		this.logger = logger;
 		this.databaseProvider = databaseProvider;
 	}
@@ -23,12 +23,12 @@ public class AppShellViewModel : ObservableObject
     {
     	logger.LogInformation("Running startup tasks...");
     
-    	if (settingsService.IsFirstRun)
+    	if (preferencesService.IsFirstRun)
     	{
     		logger.LogInformation("Handling first run tasks...");
     		await databaseProvider.InitAsync();
     
-    		settingsService.IsFirstRun = false;
+    		preferencesService.IsFirstRun = false;
     	}
 	    
 	    if (!await databaseProvider.HealthCheckAsync())

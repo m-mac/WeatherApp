@@ -1,8 +1,8 @@
 namespace WeatherApp.Interfaces;
 
-public interface ISettingsService
+public interface IPreferencesService
 {
     bool IsFirstRun { get; set; }
-    
+    DateTime LastSync { get; set; }
     
 }
