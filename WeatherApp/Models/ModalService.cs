@@ -17,11 +17,11 @@ public class ModalService : IModalService
         var page = GetCurrentPage();
         if (page == null) return false;
 
-        if (page != null)
+        if (cancelText != null)
         {
             return await page.DisplayAlert(title, message, acceptText, cancelText);
         }
         
-        return false;
+        return await page.DisplayAlert(title, message, acceptText, "OK");
     }
 }
