@@ -1,13 +1,14 @@
 using SQLite;
+using WeatherApp.Interfaces;
 
 namespace WeatherApp.Models;
 
-public class WeatherRecord
+public class WeatherRecord : IHasId
 {
     [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
+    public int? Id { get; set; }
     [Indexed]
-    public int LocationId { get; set; }
+    public int? LocationId { get; set; }
     
     public double Temperature { get; set; }
     public double Humidity { get; set; }
