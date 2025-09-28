@@ -1,13 +1,63 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <pages:MvvmContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                        xmlns:vm="clr-namespace:WeatherApp.ViewModels"
                        xmlns:pages="clr-namespace:WeatherApp.Pages"
                        x:Class="WeatherApp.Pages.SettingsPage"
-                       x:TypeArguments="vm:SettingsViewModel">
+                       x:TypeArguments="vm:SettingsViewModel"
+                       Padding="0"
+                       Title="Settings">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Settings Page" />
-        </StackLayout>
+        <Grid Padding="0" RowDefinitions="*, 1, Auto">
+            <ScrollView Grid.Row="0">
+                <TableView Intent="Settings">
+                    <TableSection Title="Danger Zone">
+                        <TextCell TextColor="Red"
+                                  Text="Reset App" Detail="Deletes stored data, locations and weather records" />
+                    </TableSection>
+
+                    <TableSection Title="Open Source Licenses">
+                        <TextCell Text="Microsoft .NET MAUI"
+                                  Detail="MIT License"
+                                  Command="{Binding OpenUrlCommand}"
+                                  CommandParameter="https://raw.githubusercontent.com/dotnet/maui/refs/heads/main/LICENSE.txt" />
+                        <TextCell Text="SQLite-net-pcl"
+                                  Detail="MIT License"
+                                  Command="{Binding OpenUrlCommand}"
+                                  CommandParameter="https://raw.githubusercontent.com/praeclarum/sqlite-net/refs/heads/master/LICENSE.txt" />
+                        <TextCell Text="Font Awesome Icons"
+                                  Detail="CC BY 4.0 License"
+                                  Command="{Binding OpenUrlCommand}"
+                                  CommandParameter="https://fontawesome.com/license/free" />
+                        <TextCell Text="Maui Icons"
+                                  Detail="MIT License"
+                                  Command="{Binding OpenUrlCommand}"
+                                  CommandParameter="https://raw.githubusercontent.com/AathifMahir/MauiIcons/refs/heads/master/LICENSE" />
+                    </TableSection>
+                </TableView>
+            </ScrollView>
+            
+            <!-- Horizontal divider -->
+            <BoxView Grid.Row="1" HorizontalOptions="Fill" HeightRequest="1" BackgroundColor="LightGrey"></BoxView>
+
+            <Label Grid.Row="3"
+                   Padding="0,10"
+                   HorizontalOptions="Center"
+                   FontSize="Small"
+                   TextColor="Gray">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="WeatherApp • Version 1.0.0 • 2025 Mike Mac • " />
+                        <Span Text="GIT" TextColor="MediumSlateBlue" FontAttributes="Bold" TextDecorations="Underline">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenUrlCommand}"
+                                                      CommandParameter="https://github.com/m-mac/WeatherApp" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </Grid>
     </ContentPage.Content>
 </pages:MvvmContentPage>
