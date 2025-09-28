@@ -38,6 +38,7 @@ public static class MauiProgram
     {
         builder.Services.AddTransient<ISettingsService, SettingsService>();
 
+        builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
         return builder;
     }
 
