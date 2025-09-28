@@ -69,6 +69,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddSingleton<ApiKeyViewModel>();
         builder.Services.AddSingleton<AppShellViewModel>();
+        builder.Services.AddSingleton<AddLocationViewModel>();
 
         return builder;
     }
@@ -77,6 +78,9 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<HomePage>();
         builder.Services.AddSingleton<SettingsPage>();
+        
+        // This needs to be transient because it's used as a modal
+        builder.Services.AddTransient<AddLocationPage>();
 
         return builder;
     }

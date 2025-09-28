@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pages:MvvmContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:vm="clr-namespace:WeatherApp.ViewModels"
+                       xmlns:pages="clr-namespace:WeatherApp.Pages"
+                       xmlns:converters="clr-namespace:WeatherApp.Converters"
+                       x:Class="WeatherApp.Pages.AddLocationPage"
+                       x:TypeArguments="vm:AddLocationViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:PlacemarkToStringConverter x:Key="PlacemarkToStringConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid RowDefinitions="50, Auto,*" Padding="0" ColumnDefinitions="100, *">
+
+            <!-- This is a quick hack to get Toolbar button on the left side -->
+            <HorizontalStackLayout Grid.Row="0">
+                <Button Text="Cancel"
+                        TextColor="Black"
+                        FontAttributes="Bold"
+                        FontSize="Medium"
+                        Command="{Binding PopModalCommand }"
+                        Grid.Column="0"
+                        BackgroundColor="Transparent" />
+
+            </HorizontalStackLayout>
+
+            <!-- Search bar at the top -->
+            <SearchBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                       BackgroundColor="White"
+                       Placeholder="Enter address"
+                       Text="{Binding SearchText}" />
+
+            <!-- CollectionView fills remaining space -->
+            <CollectionView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            ItemsSource="{Binding Suggestions}"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedSuggestion, Mode=TwoWay}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding ., Converter={StaticResource PlacemarkToStringConverter}}"
+                               Padding="10"
+                               FontSize="Medium" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </ContentPage.Content>
+</pages:MvvmContentPage>
