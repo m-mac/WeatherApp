@@ -37,8 +37,9 @@ public static class MauiProgram
     public static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
         builder.Services.AddTransient<ISettingsService, SettingsService>();
-
+        builder.Services.AddTransient<IModalService, ModalService>();
         builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
+        
         return builder;
     }
 
