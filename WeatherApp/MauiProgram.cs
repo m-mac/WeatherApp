@@ -1,6 +1,7 @@
 ﻿using MauiIcons.FontAwesome.Solid;
 using Microsoft.Extensions.Logging;
 using WeatherApp.Interfaces;
+using WeatherApp.Models;
 using WeatherApp.Pages;
 using WeatherApp.Services;
 using WeatherApp.ViewModels;
@@ -26,24 +27,23 @@ public static class MauiProgram
                 fonts.AddFont("fa-solid-900.ttf", "FontAwesomeSolid");
             });
 
-
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
         return builder.Build();
     }
 
-    public static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
+
+    private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
         builder.Services.AddTransient<ISettingsService, SettingsService>();
         builder.Services.AddTransient<IModalService, ModalService>();
         builder.Services.AddTransient<IDatabaseProvider, DatabaseProvider>();
-        
+
         return builder;
     }
 
-    public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
+    private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<HomeViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
@@ -52,7 +52,7 @@ public static class MauiProgram
         return builder;
     }
 
-    public static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
+    private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<HomePage>();
         builder.Services.AddSingleton<SettingsPage>();
