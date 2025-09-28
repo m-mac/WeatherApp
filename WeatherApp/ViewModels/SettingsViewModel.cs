@@ -1,26 +1,29 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Logging;
 using WeatherApp.Interfaces;
+using WeatherApp.Models;
 
 namespace WeatherApp.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
     private ILogger logger;
-    private IPreferencesService preferencesService;
     private IModalService modalService;
-
+    private IDatabaseProvider databaseProvider;
     private readonly ApiKeyViewModel apiKeyViewModel;
 
     [ObservableProperty] private string? apiKeyText;
 
-    public SettingsViewModel(ILogger<SettingsViewModel> logger, IPreferencesService preferencesService,
-        ApiKeyViewModel apiKeyViewModel, IModalService modalService)
+    public SettingsViewModel(ILogger<SettingsViewModel> logger, 
+                             ApiKeyViewModel apiKeyViewModel, 
+                             IModalService modalService,
+                             IDatabaseProvider databaseProvider)
     {
         this.logger = logger;
-        this.preferencesService = preferencesService;
+        this.databaseProvider = databaseProvider;
         this.modalService = modalService;
         this.apiKeyViewModel = apiKeyViewModel;
     }
@@ -63,10 +66,14 @@ public partial class SettingsViewModel : ObservableObject
             "Cancel");
 
         if (!confirm) return;
-        logger.LogInformation("Deleting application data");
-        // Drop and recreate SQLite DB
-        // Remove the API Key
-        // Default anything in stored Preferences
-        // Trigger recreate
+
+        await databaseProvider.DropAllAsync();
+
+        apiKeyViewModel.DeleteApiKey(Constants.ApiKeyStorageKey);
+
+        // Notifies the HomeViewModel to clear the list of locations
+        WeakReferenceMessenger.Default.Send(new DataResetMessage());
+        
+        logger.LogInformation("Application data deleted");
     }
 }
