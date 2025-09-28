@@ -47,6 +47,7 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<HomeViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
+        builder.Services.AddSingleton<ApiKeyViewModel>();
 
         return builder;
     }
